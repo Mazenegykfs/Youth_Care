@@ -11,6 +11,7 @@
             background-color: #e0f2fe; /* Light blue background */
             margin: 0;
             padding: 0;
+            transition: all 0.5s ease;
         }
         .header-bar {
             background-color: #1e3a8a; /* Darker blue for header */
@@ -23,8 +24,62 @@
             border-bottom-right-radius: 0.75rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .language-switcher {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
         .header-title-container {
             flex-grow: 1;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
         }
         .header-main-title {
             font-weight: 700;
@@ -40,11 +95,18 @@
             text-align: left;
         }
         .header-logo {
-            height: 60px; /* Adjust as needed */
+            height: 60px;
             width: auto;
             border-radius: 50%;
+            margin-right: 1rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        [dir="rtl"] .header-logo {
+            margin-right: 0;
             margin-left: 1rem;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Add a subtle glow/shadow to the logo */
+        }
+        [dir="rtl"] .header-title-container {
+            justify-content: flex-end;
         }
         .main-container {
             width: 100%;
@@ -56,9 +118,10 @@
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
             margin-top: 2rem;
             margin-bottom: 2rem;
+            transition: all 0.5s ease;
         }
         .action-button {
-            background-color: #10b981; /* Green for accept/execute */
+            background-color: #10b981;
             color: white;
             font-weight: 600;
             padding: 1rem 2rem;
@@ -77,7 +140,7 @@
             cursor: not-allowed;
         }
         .red-button {
-            background-color: #ef4444; /* Red for cancel/delete/stop */
+            background-color: #ef4444;
             color: white;
             font-weight: 600;
             padding: 0.75rem 1.5rem;
@@ -94,7 +157,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background-color: #bfdbfe; /* Lighter blue for column items */
+            background-color: #bfdbfe;
             padding: 0.75rem 1rem;
             margin-bottom: 0.5rem;
             border-radius: 0.5rem;
@@ -103,11 +166,11 @@
             cursor: grab;
         }
         .column-item.selected {
-            background-color: #93c5fd; /* A bit darker blue for selected */
+            background-color: #93c5fd;
             border: 2px solid #3b82f6;
         }
         .column-control-button {
-            background-color: #3b82f6; /* Blue for controls */
+            background-color: #3b82f6;
             color: white;
             padding: 0.5rem 1rem;
             border-radius: 0.25rem;
@@ -115,6 +178,10 @@
             cursor: pointer;
             margin-left: 0.5rem;
             transition: background-color 0.3s ease;
+        }
+        [dir="rtl"] .column-control-button {
+            margin-left: 0;
+            margin-right: 0.5rem;
         }
         .column-control-button:hover {
             background-color: #2563eb;
@@ -163,6 +230,9 @@
             text-align: left;
             border-bottom: 1px solid #d1e5f8;
         }
+        [dir="rtl"] th, [dir="rtl"] td {
+            text-align: right;
+        }
         th {
             background-color: #a7d9fc;
             font-weight: 600;
@@ -175,6 +245,10 @@
             margin-left: 0.5rem;
             vertical-align: middle;
             color: #1e40af;
+        }
+        [dir="rtl"] th .filter-icon {
+            margin-left: 0;
+            margin-right: 0.5rem;
         }
         th.sorted-asc .sort-icon::after { content: '▲'; }
         th.sorted-desc .sort-icon::after { content: '▼'; }
@@ -191,6 +265,10 @@
             min-width: 150px;
             max-height: 250px;
             overflow-y: auto;
+        }
+        [dir="rtl"] .filter-dropdown {
+            left: auto;
+            right: 0;
         }
         .filter-item {
             display: flex;
@@ -291,6 +369,9 @@
             margin-top: 1rem;
             justify-content: flex-end;
         }
+        [dir="rtl"] .move-buttons {
+            justify-content: flex-start;
+        }
         .control-group {
             display: flex;
             align-items: center;
@@ -310,6 +391,20 @@
         .control-group input[type="radio"] {
             margin-right: 0.5rem;
         }
+        [dir="rtl"] .control-group input[type="radio"] {
+            margin-right: 0;
+            margin-left: 0.5rem;
+        }
+        .main-content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .language-switcher-container {
+            align-self: flex-end;
+            margin-top: 1rem;
+            margin-bottom: -1rem;
+        }
         @media (max-width: 768px) {
             .grid-container {
                 grid-template-columns: 1fr;
@@ -324,6 +419,9 @@
                 flex-direction: column;
                 align-items: stretch;
             }
+            .language-switcher-container {
+                align-self: center;
+            }
         }
     </style>
 </head>
@@ -333,85 +431,342 @@
             <div class="header-main-title">Developed by Dr. Mazen Badawy</div>
             <div class="header-subtitle">Doctorate of English Teaching and Testing</div>
         </div>
-        <img src="00.jpg" alt="Logo" class="header-logo">
+        <img src="00.png" alt="Logo" class="header-logo">
     </div>
-    <div class="main-container">
-        <h1>Column Selection and Data Export</h1>
+    <div class="main-content-wrapper">
+        <div class="language-switcher-container">
+            <div class="language-switcher">
+                <span>EN</span>
+                <label class="switch">
+                    <input type="checkbox" id="languageSwitch">
+                    <span class="slider"></span>
+                </label>
+                <span>AR</span>
+            </div>
+        </div>
+        <div class="main-container">
+            <h1 id="main-title">Column Selection and Data Export</h1>
 
-        <section class="section">
-            <h2>Upload Your Data File</h2>
-            <input type="file" id="fileInput" accept=".csv, .xlsx" class="file-input" />
-        </section>
+            <section id="uploadSection" class="section">
+                <h2 id="upload-title">Upload Your Data File</h2>
+                <input type="file" id="fileInput" accept=".csv, .xlsx" class="file-input" />
+            </section>
 
-        <section id="columnSelectionSection" class="section hidden">
-            <h2>Select and Order Columns</h2>
-            <div class="grid-container">
-                <div>
-                    <h3>Available Columns</h3>
-                    <div id="availableColumnsList" class="column-list">
-                        <!-- Available columns will be populated here -->
+            <section id="columnSelectionSection" class="section hidden">
+                <h2 id="select-title">Select and Order Columns</h2>
+                <div class="grid-container">
+                    <div>
+                        <h3 id="available-columns-title">Available Columns</h3>
+                        <div id="availableColumnsList" class="column-list">
+                            <!-- Available columns will be populated here -->
+                        </div>
+                    </div>
+                    <div>
+                        <h3 id="selected-columns-title">Selected Columns (Order)</h3>
+                        <div id="selectedColumnsList" class="column-list">
+                            <!-- Selected and ordered columns will be populated here -->
+                        </div>
+                        <div class="move-buttons">
+                            <button id="moveUpBtn" class="column-control-button">▲ <span class="lang-text" data-key="move-up">Move Up</span></button>
+                            <button id="moveDownBtn" class="column-control-button">▼ <span class="lang-text" data-key="move-down">Move Down</span></button>
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <h3>Selected Columns (Order)</h3>
-                    <div id="selectedColumnsList" class="column-list">
-                        <!-- Selected and ordered columns will be populated here -->
-                    </div>
-                    <div class="move-buttons">
-                        <button id="moveUpBtn" class="column-control-button">▲ Move Up</button>
-                        <button id="moveDownBtn" class="column-control-button">▼ Move Down</button>
-                    </div>
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <button id="displayTableBtn" class="action-button"><span class="lang-text" data-key="display-table">Display Table</span></button>
                 </div>
-            </div>
-            <div style="text-align: center; margin-top: 1.5rem;">
-                <button id="displayTableBtn" class="action-button">Display Table</button>
-            </div>
-        </section>
+            </section>
 
-        <section id="resultSection" class="section hidden">
-            <h2>Results Table</h2>
-            <div class="control-group">
-                <label for="sortColumn">Sort By:</label>
-                <select id="sortColumn">
-                    <option value="">(None)</option>
-                </select>
-                <input type="radio" id="sortAsc" name="sortDirection" value="asc" checked>
-                <label for="sortAsc">Asc</label>
-                <input type="radio" id="sortDesc" name="sortDirection" value="desc">
-                <label for="sortDesc">Desc</label>
-            </div>
-            <div class="control-group">
-                <label for="fontSizeInput">PPTX Font Size:</label>
-                <input type="number" id="fontSizeInput" value="12" min="8" max="24">
-            </div>
-            <div class="button-group">
-                <button id="exportPPTXBtn" class="action-button" disabled>Export to PPTX</button>
-            </div>
-            <div class="table-container">
-                <table id="dataTable">
-                    <thead>
-                        <tr id="tableHeaderRow">
-                            <!-- Table headers will be inserted here -->
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        <!-- Table data will be inserted here -->
-                    </tbody>
-                </table>
-            </div>
-            <div class="loading" id="loadingIndicator">
-                <div class="loading-spinner"></div>
-                <p>Generating PowerPoint file...</p>
-            </div>
-            <div class="status-message status-info" id="pptStatusMessage"></div>
-        </section>
+            <section id="resultSection" class="section hidden">
+                <h2 id="result-title">Results Table</h2>
+                <div class="control-group">
+                    <label id="sort-by-label" for="sortColumn">Sort By:</label>
+                    <select id="sortColumn">
+                        <option value="">(None)</option>
+                    </select>
+                    <input type="radio" id="sortAsc" name="sortDirection" value="asc" checked>
+                    <label id="sort-asc-label" for="sortAsc">Asc</label>
+                    <input type="radio" id="sortDesc" name="sortDirection" value="desc">
+                    <label id="sort-desc-label" for="sortDesc">Desc</label>
+                </div>
+                <div class="control-group">
+                    <label id="font-size-label" for="fontSizeInput">PPTX Font Size:</label>
+                    <input type="number" id="fontSizeInput" value="12" min="8" max="24">
+                </div>
+                <div class="button-group">
+                    <button id="exportPPTXBtn" class="action-button" disabled><span class="lang-text" data-key="export-pptx">Export to PPTX</span></button>
+                </div>
+                <div class="table-container">
+                    <table id="dataTable">
+                        <thead>
+                            <tr id="tableHeaderRow">
+                                <!-- Table headers will be inserted here -->
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Table data will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="loading" id="loadingIndicator">
+                    <div class="loading-spinner"></div>
+                    <p id="loading-text" class="lang-text" data-key="loading-text">Generating PowerPoint file...</p>
+                </div>
+                <div class="status-message status-info" id="pptStatusMessage"></div>
+            </section>
+        </div>
     </div>
-
-    <!-- Scripts loaded in correct order with proper error handling -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
-        // Load PptxGenJS dynamically with better error handling
+        const translations = {
+            en: {
+                'main-title': 'Column Selection and Data Export',
+                'upload-title': 'Upload Your Data File',
+                'select-title': 'Select and Order Columns',
+                'available-columns-title': 'Available Columns',
+                'selected-columns-title': 'Selected Columns (Order)',
+                'move-up': 'Move Up',
+                'move-down': 'Move Down',
+                'display-table': 'Display Table',
+                'result-title': 'Results Table',
+                'sort-by-label': 'Sort By:',
+                'sort-asc-label': 'Asc',
+                'sort-desc-label': 'Desc',
+                'font-size-label': 'PPTX Font Size:',
+                'export-pptx': 'Export to PPTX',
+                'loading-text': 'Generating PowerPoint file...',
+                'upload-error': 'Please upload a CSV or XLSX file.',
+                'parse-error': 'Error parsing file: ',
+                'empty-file-error': 'File is empty or has no identifiable headers.',
+                'no-column-selected-error': 'Please select at least one column.',
+                'pptx-loading-success': 'PowerPoint library loaded successfully. Ready to export.',
+                'pptx-loading-error': 'PowerPoint library failed to load. PPTX export unavailable.',
+                'pptx-export-unavailable': 'PowerPoint generation is not available. Please wait for the library to load or refresh the page.',
+                'pptx-no-data-to-export': 'No data with content to generate slides for.',
+                'pptx-download-success': 'PowerPoint file downloaded successfully! 🎉',
+                'pptx-download-error': 'Error generating PowerPoint file: ',
+                'remove': 'Remove',
+                'add': 'Add',
+                'ok': 'OK',
+                'cancel': 'Cancel',
+                'select-all': '(Select All)',
+                'sort-none': '(None)'
+            },
+            ar: {
+                'main-title': 'تحديد الأعمدة وتصدير البيانات',
+                'upload-title': 'قم بتحميل ملف البيانات الخاص بك',
+                'select-title': 'حدد ورتب الأعمدة',
+                'available-columns-title': 'الأعمدة المتاحة',
+                'selected-columns-title': 'الأعمدة المحددة (الترتيب)',
+                'move-up': 'تحريك للأعلى',
+                'move-down': 'تحريك للأسفل',
+                'display-table': 'عرض الجدول',
+                'result-title': 'جدول النتائج',
+                'sort-by-label': 'الفرز حسب:',
+                'sort-asc-label': 'تصاعدي',
+                'sort-desc-label': 'تنازلي',
+                'font-size-label': 'حجم خط ملف PPTX:',
+                'export-pptx': 'تصدير إلى PPTX',
+                'loading-text': 'جاري إنشاء ملف PowerPoint...',
+                'upload-error': 'يرجى تحميل ملف بصيغة CSV أو XLSX.',
+                'parse-error': 'خطأ في تحليل الملف: ',
+                'empty-file-error': 'الملف فارغ أو لا يحتوي على رؤوس أعمدة واضحة.',
+                'no-column-selected-error': 'يرجى تحديد عمود واحد على الأقل.',
+                'pptx-loading-success': 'تم تحميل مكتبة PowerPoint بنجاح. جاهز للتصدير.',
+                'pptx-loading-error': 'فشل تحميل مكتبة PowerPoint. التصدير غير متاح.',
+                'pptx-export-unavailable': 'توليد ملف PowerPoint غير متاح. يرجى الانتظار لتحميل المكتبة أو تحديث الصفحة.',
+                'pptx-no-data-to-export': 'لا توجد بيانات ذات محتوى لإنشاء شرائح لها.',
+                'pptx-download-success': 'تم تنزيل ملف PowerPoint بنجاح! 🎉',
+                'pptx-download-error': 'خطأ في إنشاء ملف PowerPoint: ',
+                'remove': 'إزالة',
+                'add': 'إضافة',
+                'ok': 'موافق',
+                'cancel': 'إلغاء',
+                'select-all': '(تحديد الكل)',
+                'sort-none': '(لا شيء)'
+            }
+        };
+
+        let currentLanguage = 'en';
+        let rawData = [];
+        let allHeaders = [];
+        let selectedHeaders = [];
+        let activeFilters = {};
+        let currentlySelectedColumnElement = null;
+        let pptxReady = false;
+
+        // Moved DOM element variables to global scope
+        const fileInput = document.getElementById('fileInput');
+        const languageSwitch = document.getElementById('languageSwitch');
+        const columnSelectionSection = document.getElementById('columnSelectionSection');
+        const availableColumnsList = document.getElementById('availableColumnsList');
+        const selectedColumnsList = document.getElementById('selectedColumnsList');
+        const moveUpBtn = document.getElementById('moveUpBtn');
+        const moveDownBtn = document.getElementById('moveDownBtn');
+        const displayTableBtn = document.getElementById('displayTableBtn');
+        const resultSection = document.getElementById('resultSection');
+        const tableHeaderRow = document.getElementById('tableHeaderRow');
+        const tableBody = document.getElementById('tableBody');
+        const exportPPTXBtn = document.getElementById('exportPPTXBtn');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const pptStatusMessage = document.getElementById('pptStatusMessage');
+        const sortColumnSelect = document.getElementById('sortColumn');
+        const sortDirectionRadios = document.querySelectorAll('input[name="sortDirection"]');
+        const fontSizeInput = document.getElementById('fontSizeInput');
+
+        function updateLanguage(lang) {
+            currentLanguage = lang;
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+            // Update static elements
+            document.getElementById('main-title').textContent = translations[lang]['main-title'];
+            document.getElementById('upload-title').textContent = translations[lang]['upload-title'];
+            document.getElementById('select-title').textContent = translations[lang]['select-title'];
+            document.getElementById('available-columns-title').textContent = translations[lang]['available-columns-title'];
+            document.getElementById('selected-columns-title').textContent = translations[lang]['selected-columns-title'];
+            document.getElementById('displayTableBtn').querySelector('.lang-text').textContent = translations[lang]['display-table'];
+            document.getElementById('result-title').textContent = translations[lang]['result-title'];
+            document.getElementById('sort-by-label').textContent = translations[lang]['sort-by-label'];
+            document.getElementById('sort-asc-label').textContent = translations[lang]['sort-asc-label'];
+            document.getElementById('sort-desc-label').textContent = translations[lang]['sort-desc-label'];
+            document.getElementById('font-size-label').textContent = translations[lang]['font-size-label'];
+            document.getElementById('exportPPTXBtn').querySelector('.lang-text').textContent = translations[lang]['export-pptx'];
+            document.getElementById('loading-text').textContent = translations[lang]['loading-text'];
+
+            // Update dynamic elements
+            updateDynamicText();
+            renderSelectedColumns();
+            if (!columnSelectionSection.classList.contains('hidden') && rawData.length > 0) {
+                renderTable();
+            }
+        }
+
+        function updateDynamicText() {
+            // Update button texts
+            document.querySelectorAll('.column-item .add-to-selected').forEach(btn => btn.textContent = translations[currentLanguage]['add']);
+            document.querySelectorAll('.column-item .remove-from-selected').forEach(btn => btn.textContent = translations[currentLanguage]['remove']);
+
+            // Update sort option
+            const sortNoneOption = document.querySelector('#sortColumn option[value=""]');
+            if (sortNoneOption) {
+                sortNoneOption.textContent = translations[currentLanguage]['sort-none'];
+            }
+        }
+
+        // Dunctions moved to global scope
+        function renderSelectedColumns() {
+            const selectedColumnsList = document.getElementById('selectedColumnsList');
+            selectedColumnsList.innerHTML = '';
+            selectedHeaders.forEach(header => {
+                const item = document.createElement('div');
+                item.classList.add('column-item', 'draggable');
+                item.innerHTML = `
+                    <span>${header}</span>
+                    <button class="red-button remove-from-selected">${translations[currentLanguage]['remove']}</button>
+                `;
+                item.dataset.header = header;
+                selectedColumnsList.appendChild(item);
+
+                item.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('remove-from-selected')) return;
+                    if (currentlySelectedColumnElement) {
+                        currentlySelectedColumnElement.classList.remove('selected');
+                    }
+                    currentlySelectedColumnElement = item;
+                    item.classList.add('selected');
+                });
+            });
+
+            selectedColumnsList.querySelectorAll('.remove-from-selected').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const headerToRemove = e.target.closest('.column-item').dataset.header;
+                    selectedHeaders = selectedHeaders.filter(h => h !== headerToRemove);
+                    delete activeFilters[headerToRemove];
+                    renderSelectedColumns();
+                    if (currentlySelectedColumnElement && currentlySelectedColumnElement.dataset.header === headerToRemove) {
+                        currentlySelectedColumnElement = null;
+                    }
+                });
+            });
+        }
+        
+        function renderTable() {
+            const tableHeaderRow = document.getElementById('tableHeaderRow');
+            const tableBody = document.getElementById('tableBody');
+            const resultSection = document.getElementById('resultSection');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const exportPPTXBtn = document.getElementById('exportPPTXBtn');
+            const pptStatusMessage = document.getElementById('pptStatusMessage');
+            const sortColumnSelect = document.getElementById('sortColumn');
+
+            if (selectedHeaders.length === 0) {
+                const customAlert = document.createElement('div');
+                customAlert.classList.add('status-message', 'status-error');
+                customAlert.textContent = translations[currentLanguage]['no-column-selected-error'];
+                document.querySelector('.main-container').appendChild(customAlert);
+                setTimeout(() => customAlert.remove(), 3000);
+                return;
+            }
+
+            tableHeaderRow.innerHTML = '';
+            tableBody.innerHTML = '';
+
+            const sortColumn = sortColumnSelect.value;
+            const sortDirection = document.querySelector('input[name="sortDirection"]:checked').value;
+
+            const filteredData = filterData(rawData);
+            const sortedAndFilteredData = sortData(filteredData, sortColumn, sortDirection);
+            const dateTimeColumns = ['التاريخ (الي)', 'التاريخ (من)', 'وقت البدء', 'وقت الإكمال'];
+
+            selectedHeaders.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                
+                const filterIcon = document.createElement('span');
+                filterIcon.classList.add('filter-icon');
+                filterIcon.textContent = '▼';
+                filterIcon.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    showFilterDropdown(th, header);
+                });
+                th.appendChild(filterIcon);
+
+                tableHeaderRow.appendChild(th);
+            });
+
+            sortedAndFilteredData.forEach(row => {
+                const tr = document.createElement('tr');
+                selectedHeaders.forEach(header => {
+                    const td = document.createElement('td');
+                    let cellValue = row[header] !== undefined ? row[header] : '';
+
+                    if (dateTimeColumns.includes(header)) {
+                        cellValue = formatDate(cellValue);
+                    }
+                    td.textContent = cellValue;
+                    tr.appendChild(td);
+                });
+                tableBody.appendChild(tr);
+            });
+
+            resultSection.classList.remove('hidden');
+            loadingIndicator.style.display = 'none';
+
+            if (pptxReady && window.PptxGenJS) {
+                exportPPTXBtn.disabled = false;
+                pptStatusMessage.textContent = translations[currentLanguage]['pptx-loading-success'];
+                pptStatusMessage.className = 'status-message status-success';
+            } else {
+                exportPPTXBtn.disabled = true;
+                pptStatusMessage.textContent = translations[currentLanguage]['pptx-loading-error'];
+                pptStatusMessage.className = 'status-message status-error';
+            }
+        }
+
+        // The rest of the functions
         function loadPptxGenJS() {
             return new Promise((resolve, reject) => {
                 if (window.PptxGenJS) {
@@ -433,34 +788,251 @@
             });
         }
 
-        // Wait for DOM and all resources to be ready
-        document.addEventListener('DOMContentLoaded', function() {
-            let rawData = [];
-            let allHeaders = [];
-            let selectedHeaders = [];
-            let activeFilters = {}; // New object to store filters per column
-            let currentlySelectedColumnElement = null;
-            let pptxReady = false;
+        function excelDateToJSDate(excelSerial) {
+            if (typeof excelSerial !== 'number' || excelSerial <= 0) {
+                return null;
+            }
 
-            // Get DOM elements
-            const fileInput = document.getElementById('fileInput');
-            const columnSelectionSection = document.getElementById('columnSelectionSection');
-            const availableColumnsList = document.getElementById('availableColumnsList');
-            const selectedColumnsList = document.getElementById('selectedColumnsList');
-            const moveUpBtn = document.getElementById('moveUpBtn');
-            const moveDownBtn = document.getElementById('moveDownBtn');
-            const displayTableBtn = document.getElementById('displayTableBtn');
-            const resultSection = document.getElementById('resultSection');
-            const tableHeaderRow = document.getElementById('tableHeaderRow');
-            const tableBody = document.getElementById('tableBody');
-            const exportPPTXBtn = document.getElementById('exportPPTXBtn');
-            const loadingIndicator = document.getElementById('loadingIndicator');
-            const pptStatusMessage = document.getElementById('pptStatusMessage');
-            const sortColumnSelect = document.getElementById('sortColumn');
-            const sortDirectionRadios = document.querySelectorAll('input[name="sortDirection"]');
-            const fontSizeInput = document.getElementById('fontSizeInput');
+            let days = excelSerial;
+            if (days > 60) {
+                days--;
+            }
+
+            const msPerDay = 24 * 60 * 60 * 1000;
+            const excelEpoch = new Date('1899-12-30T00:00:00.000Z');
+            const jsDate = new Date(excelEpoch.getTime() + (days * msPerDay));
+            return jsDate;
+        }
+
+        function formatDate(value) {
+            if (value === null || value === undefined || String(value).trim() === '') {
+                return '';
+            }
+
+            let date;
+            let dateString = String(value).trim();
+
+            if (typeof value === 'number' && value > 1 && value < 2958466) {
+                date = excelDateToJSDate(value);
+            } else {
+                function tryParseStringDate(str) {
+                    let matchYMD = str.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})([\sT].*)?$/);
+                    if (matchYMD) {
+                        let d = new Date(matchYMD[1], matchYMD[2] - 1, matchYMD[3]);
+                        if (!isNaN(d.getTime())) return d;
+                    }
+
+                    let matchDMY = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})([\sT].*)?$/);
+                    if (matchDMY) {
+                        let d = new Date(matchDMY[3], matchDMY[2] - 1, matchDMY[1]);
+                        if (!isNaN(d.getTime())) return d;
+                    }
+
+                    let matchMDY = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})([\sT].*)?$/);
+                    if (matchMDY) {
+                        let d = new Date(matchMDY[3], matchMDY[1] - 1, matchMDY[2]);
+                        if (!isNaN(d.getTime())) return d;
+                    }
+
+                    let d = new Date(str);
+                    if (!isNaN(d.getTime())) return d;
+                    return null;
+                }
+                date = tryParseStringDate(dateString);
+            }
+
+            if (date) {
+                return date.toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            }
+            return '';
+        }
+
+        function parseCSV(data) {
+            Papa.parse(data, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    rawData = results.data;
+                    allHeaders = results.meta.fields;
+                    initializeColumnSelectors();
+                },
+                error: function(err) {
+                    const customAlert = document.createElement('div');
+                    customAlert.classList.add('status-message', 'status-error');
+                    customAlert.textContent = translations[currentLanguage]['parse-error'] + err.message;
+                    document.querySelector('.main-container').appendChild(customAlert);
+                    setTimeout(() => customAlert.remove(), 3000);
+                }
+            });
+        }
+
+        function parseXLSX(data) {
+            try {
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+
+                let headerRow = XLSX.utils.sheet_to_json(worksheet, { header: 1, range: 0 })[0];
+                if (headerRow && headerRow.length > 0) {
+                    allHeaders = headerRow;
+                    rawData = XLSX.utils.sheet_to_json(worksheet, { header: allHeaders, raw: false, defval: null });
+                } else {
+                    allHeaders = [];
+                    rawData = [];
+                    const customAlert = document.createElement('div');
+                    customAlert.classList.add('status-message', 'status-error');
+                    customAlert.textContent = translations[currentLanguage]['empty-file-error'];
+                    document.querySelector('.main-container').appendChild(customAlert);
+                    setTimeout(() => customAlert.remove(), 3000);
+                }
+                initializeColumnSelectors();
+            } catch (error) {
+                const customAlert = document.createElement('div');
+                customAlert.classList.add('status-message', 'status-error');
+                customAlert.textContent = translations[currentLanguage]['parse-error'] + error.message;
+                document.querySelector('.main-container').appendChild(customAlert);
+                setTimeout(() => customAlert.remove(), 3000);
+                console.error('XLSX parse error:', error);
+            }
+        }
+
+        function initializeColumnSelectors() {
+            availableColumnsList.innerHTML = '';
+            selectedColumnsList.innerHTML = '';
+            sortColumnSelect.innerHTML = `<option value="">${translations[currentLanguage]['sort-none']}</option>`;
+            selectedHeaders = [];
+            activeFilters = {};
+            columnSelectionSection.classList.remove('hidden');
+            resultSection.classList.add('hidden');
+
+            allHeaders.forEach(header => {
+                const item = document.createElement('div');
+                item.classList.add('column-item');
+                item.innerHTML = `
+                    <span>${header}</span>
+                    <button class="column-control-button add-to-selected">${translations[currentLanguage]['add']}</button>
+                `;
+                item.dataset.header = header;
+                availableColumnsList.appendChild(item);
+
+                const sortOption = document.createElement('option');
+                sortOption.value = header;
+                sortOption.textContent = header;
+                sortColumnSelect.appendChild(sortOption);
+            });
+
+            availableColumnsList.querySelectorAll('.add-to-selected').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const header = e.target.closest('.column-item').dataset.header;
+                    if (!selectedHeaders.includes(header)) {
+                        selectedHeaders.push(header);
+                        renderSelectedColumns();
+                    }
+                });
+            });
+        }
+        
+        function filterData(data) {
+            let filteredData = [...data];
+            for (const column in activeFilters) {
+                if (activeFilters[column].length > 0) {
+                    filteredData = filteredData.filter(row => activeFilters[column].includes(String(row[column])));
+                }
+            }
+            return filteredData;
+        }
+
+        function sortData(data, column, direction) {
+            if (!column) return data;
             
-            // Listen for clicks outside the filter dropdown to close it
+            const sorted = [...data].sort((a, b) => {
+                let valA = a[column];
+                let valB = b[column];
+
+                const dateTimeColumns = ['التاريخ (الي)', 'التاريخ (من)', 'وقت البدء', 'وقت الإكمال'];
+
+                if (valA === null || valA === undefined || valA === '') return 1;
+                if (valB === null || valB === undefined || valB === '') return -1;
+                
+                let comparison = 0;
+
+                if (dateTimeColumns.includes(column)) {
+                    const dateA = new Date(valA);
+                    const dateB = new Date(valB);
+                    comparison = dateA - dateB;
+                } else if (!isNaN(parseFloat(valA)) && isFinite(valA) && !isNaN(parseFloat(valB)) && isFinite(valB)) {
+                    comparison = parseFloat(valA) - parseFloat(valB);
+                } else {
+                    comparison = String(valA).localeCompare(String(valB), currentLanguage, { sensitivity: 'base' });
+                }
+
+                return direction === 'asc' ? comparison : -comparison;
+            });
+            return sorted;
+        }
+
+        function showFilterDropdown(th, header) {
+            document.querySelectorAll('.filter-dropdown').forEach(d => d.remove());
+
+            const uniqueValues = [...new Set(rawData.map(row => String(row[header])))].sort();
+            
+            const dropdown = document.createElement('div');
+            dropdown.classList.add('filter-dropdown');
+            dropdown.addEventListener('click', (e) => e.stopPropagation());
+
+            const selectAllItem = document.createElement('div');
+            selectAllItem.classList.add('filter-item');
+            selectAllItem.innerHTML = `<input type="checkbox" id="selectAll"><label for="selectAll">${translations[currentLanguage]['select-all']}</label>`;
+            dropdown.appendChild(selectAllItem);
+
+            const valueList = document.createElement('div');
+            uniqueValues.forEach(value => {
+                const filterItem = document.createElement('div');
+                filterItem.classList.add('filter-item');
+                const isChecked = !activeFilters[header] || activeFilters[header].length === 0 || activeFilters[header].includes(value);
+                filterItem.innerHTML = `<input type="checkbox" value="${value}" ${isChecked ? 'checked' : ''}><label>${value}</label>`;
+                valueList.appendChild(filterItem);
+            });
+            dropdown.appendChild(valueList);
+
+            const buttons = document.createElement('div');
+            buttons.classList.add('filter-buttons');
+            buttons.innerHTML = `
+                <button class="action-button ok-btn">${translations[currentLanguage]['ok']}</button>
+                <button class="red-button cancel-btn">${translations[currentLanguage]['cancel']}</button>
+            `;
+            dropdown.appendChild(buttons);
+
+            th.appendChild(dropdown);
+
+            const selectAllCheckbox = dropdown.querySelector('#selectAll');
+            const valueCheckboxes = dropdown.querySelectorAll('input[type="checkbox"]:not(#selectAll)');
+            selectAllCheckbox.checked = activeFilters[header] === undefined || activeFilters[header].length === 0 || activeFilters[header].length === uniqueValues.length;
+            selectAllCheckbox.addEventListener('change', (e) => {
+                valueCheckboxes.forEach(cb => cb.checked = e.target.checked);
+            });
+            
+            dropdown.querySelector('.ok-btn').addEventListener('click', () => {
+                const selectedValues = Array.from(valueCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+                activeFilters[header] = selectedValues;
+                dropdown.remove();
+                renderTable();
+            });
+            dropdown.querySelector('.cancel-btn').addEventListener('click', () => {
+                dropdown.remove();
+            });
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // Initial language update
+            updateLanguage(languageSwitch.checked ? 'ar' : 'en');
+            
+            languageSwitch.addEventListener('change', (e) => {
+                updateLanguage(e.target.checked ? 'ar' : 'en');
+            });
+            
             document.addEventListener('click', (e) => {
                 const dropdowns = document.querySelectorAll('.filter-dropdown');
                 dropdowns.forEach(dropdown => {
@@ -471,81 +1043,18 @@
                 });
             });
 
-            // Load PptxGenJS library
             loadPptxGenJS().then(() => {
                 pptxReady = true;
-                pptStatusMessage.textContent = 'PowerPoint library loaded successfully. Ready to export.';
+                pptStatusMessage.textContent = translations[currentLanguage]['pptx-loading-success'];
                 pptStatusMessage.className = 'status-message status-success';
                 exportPPTXBtn.disabled = false;
             }).catch(error => {
                 console.error('Failed to load PptxGenJS:', error);
-                pptStatusMessage.textContent = 'PowerPoint library failed to load. PPTX export unavailable.';
+                pptStatusMessage.textContent = translations[currentLanguage]['pptx-loading-error'];
                 pptStatusMessage.className = 'status-message status-error';
                 exportPPTXBtn.disabled = true;
             });
-
-            // Helper function to convert Excel date serials to JavaScript Date objects
-            function excelDateToJSDate(excelSerial) {
-                if (typeof excelSerial !== 'number' || excelSerial <= 0) {
-                    return null;
-                }
-
-                let days = excelSerial;
-                if (days > 60) {
-                    days--;
-                }
-
-                const msPerDay = 24 * 60 * 60 * 1000;
-                const excelEpoch = new Date('1899-12-30T00:00:00.000Z');
-                const jsDate = new Date(excelEpoch.getTime() + (days * msPerDay));
-                return jsDate;
-            }
-
-            // Helper function to format date strings robustly
-            function formatDate(value) {
-                if (value === null || value === undefined || String(value).trim() === '') {
-                    return '';
-                }
-
-                let date;
-                let dateString = String(value).trim();
-
-                if (typeof value === 'number' && value > 1 && value < 2958466) {
-                    date = excelDateToJSDate(value);
-                } else {
-                    function tryParseStringDate(str) {
-                        let matchYMD = str.match(/^(\d{4})[/-](\d{1,2})[/-](\d{1,2})([\sT].*)?$/);
-                        if (matchYMD) {
-                            let d = new Date(matchYMD[1], matchYMD[2] - 1, matchYMD[3]);
-                            if (!isNaN(d.getTime())) return d;
-                        }
-
-                        let matchDMY = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})([\sT].*)?$/);
-                        if (matchDMY) {
-                            let d = new Date(matchDMY[3], matchDMY[2] - 1, matchDMY[1]);
-                            if (!isNaN(d.getTime())) return d;
-                        }
-
-                        let matchMDY = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})([\sT].*)?$/);
-                        if (matchMDY) {
-                            let d = new Date(matchMDY[3], matchMDY[1] - 1, matchMDY[2]);
-                            if (!isNaN(d.getTime())) return d;
-                        }
-
-                        let d = new Date(str);
-                        if (!isNaN(d.getTime())) return d;
-                        return null;
-                    }
-                    date = tryParseStringDate(dateString);
-                }
-
-                if (date) {
-                    return date.toLocaleDateString('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit' });
-                }
-                return '';
-            }
-
-            // File upload handler
+            
             fileInput.addEventListener('change', (event) => {
                 const file = event.target.files[0];
                 if (!file) return;
@@ -562,7 +1071,7 @@
                     } else {
                         const customAlert = document.createElement('div');
                         customAlert.classList.add('status-message', 'status-error');
-                        customAlert.textContent = 'Please upload a CSV or XLSX file.';
+                        customAlert.textContent = translations[currentLanguage]['upload-error'];
                         document.querySelector('.main-container').appendChild(customAlert);
                         setTimeout(() => customAlert.remove(), 3000);
                     }
@@ -575,307 +1084,10 @@
                 }
             });
 
-            // Parse CSV data
-            function parseCSV(data) {
-                Papa.parse(data, {
-                    header: true,
-                    skipEmptyLines: true,
-                    complete: function(results) {
-                        rawData = results.data;
-                        allHeaders = results.meta.fields;
-                        initializeColumnSelectors();
-                    },
-                    error: function(err) {
-                        const customAlert = document.createElement('div');
-                        customAlert.classList.add('status-message', 'status-error');
-                        customAlert.textContent = 'Error parsing CSV: ' + err.message;
-                        document.querySelector('.main-container').appendChild(customAlert);
-                        setTimeout(() => customAlert.remove(), 3000);
-                    }
-                });
-            }
-
-            // Parse XLSX data
-            function parseXLSX(data) {
-                try {
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-
-                    let headerRow = XLSX.utils.sheet_to_json(worksheet, { header: 1, range: 0 })[0];
-                    if (headerRow && headerRow.length > 0) {
-                        allHeaders = headerRow;
-                        rawData = XLSX.utils.sheet_to_json(worksheet, { header: allHeaders, raw: false, defval: null });
-                    } else {
-                        allHeaders = [];
-                        rawData = [];
-                        const customAlert = document.createElement('div');
-                        customAlert.classList.add('status-message', 'status-error');
-                        customAlert.textContent = 'XLSX file is empty or has no identifiable headers.';
-                        document.querySelector('.main-container').appendChild(customAlert);
-                        setTimeout(() => customAlert.remove(), 3000);
-                    }
-                    initializeColumnSelectors();
-                } catch (error) {
-                    const customAlert = document.createElement('div');
-                    customAlert.classList.add('status-message', 'status-error');
-                    customAlert.textContent = 'Error parsing XLSX: ' + error.message;
-                    document.querySelector('.main-container').appendChild(customAlert);
-                    setTimeout(() => customAlert.remove(), 3000);
-                    console.error('XLSX parse error:', error);
-                }
-            }
-
-            // Initialize column selectors and sorting/filtering options
-            function initializeColumnSelectors() {
-                availableColumnsList.innerHTML = '';
-                selectedColumnsList.innerHTML = '';
-                sortColumnSelect.innerHTML = '<option value="">(None)</option>';
-                selectedHeaders = [];
-                activeFilters = {};
-                columnSelectionSection.classList.remove('hidden');
-                resultSection.classList.add('hidden');
-
-                allHeaders.forEach(header => {
-                    const item = document.createElement('div');
-                    item.classList.add('column-item');
-                    item.innerHTML = `
-                        <span>${header}</span>
-                        <button class="column-control-button add-to-selected">Add</button>
-                    `;
-                    item.dataset.header = header;
-                    availableColumnsList.appendChild(item);
-
-                    const sortOption = document.createElement('option');
-                    sortOption.value = header;
-                    sortOption.textContent = header;
-                    sortColumnSelect.appendChild(sortOption);
-                });
-
-                availableColumnsList.querySelectorAll('.add-to-selected').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const header = e.target.closest('.column-item').dataset.header;
-                        if (!selectedHeaders.includes(header)) {
-                            selectedHeaders.push(header);
-                            renderSelectedColumns();
-                        }
-                    });
-                });
-            }
-
-            // Render selected columns
-            function renderSelectedColumns() {
-                selectedColumnsList.innerHTML = '';
-                selectedHeaders.forEach(header => {
-                    const item = document.createElement('div');
-                    item.classList.add('column-item', 'draggable');
-                    item.innerHTML = `
-                        <span>${header}</span>
-                        <button class="red-button remove-from-selected">Remove</button>
-                    `;
-                    item.dataset.header = header;
-                    selectedColumnsList.appendChild(item);
-
-                    item.addEventListener('click', (e) => {
-                        if (e.target.classList.contains('remove-from-selected')) return;
-                        if (currentlySelectedColumnElement) {
-                            currentlySelectedColumnElement.classList.remove('selected');
-                        }
-                        currentlySelectedColumnElement = item;
-                        item.classList.add('selected');
-                    });
-                });
-
-                selectedColumnsList.querySelectorAll('.remove-from-selected').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const headerToRemove = e.target.closest('.column-item').dataset.header;
-                        selectedHeaders = selectedHeaders.filter(h => h !== headerToRemove);
-                        delete activeFilters[headerToRemove];
-                        renderSelectedColumns();
-                        if (currentlySelectedColumnElement && currentlySelectedColumnElement.dataset.header === headerToRemove) {
-                            currentlySelectedColumnElement = null;
-                        }
-                    });
-                });
-            }
-            
-            // Function to filter data based on activeFilters object
-            function filterData(data) {
-                let filteredData = [...data];
-                for (const column in activeFilters) {
-                    // Check if the filter for this column is not empty
-                    if (activeFilters[column].length > 0) {
-                        filteredData = filteredData.filter(row => activeFilters[column].includes(String(row[column])));
-                    }
-                }
-                return filteredData;
-            }
-
-            // Function to sort data
-            function sortData(data, column, direction) {
-                if (!column) return data;
-                
-                const sorted = [...data].sort((a, b) => {
-                    let valA = a[column];
-                    let valB = b[column];
-
-                    const dateTimeColumns = ['التاريخ (الي)', 'التاريخ (من)', 'وقت البدء', 'وقت الإكمال'];
-
-                    if (valA === null || valA === undefined || valA === '') return 1;
-                    if (valB === null || valB === undefined || valB === '') return -1;
-                    
-                    let comparison = 0;
-
-                    if (dateTimeColumns.includes(column)) {
-                        const dateA = new Date(valA);
-                        const dateB = new Date(valB);
-                        comparison = dateA - dateB;
-                    } else if (!isNaN(parseFloat(valA)) && isFinite(valA) && !isNaN(parseFloat(valB)) && isFinite(valB)) {
-                        comparison = parseFloat(valA) - parseFloat(valB);
-                    } else {
-                        comparison = String(valA).localeCompare(String(valB), 'ar', { sensitivity: 'base' });
-                    }
-
-                    return direction === 'asc' ? comparison : -comparison;
-                });
-                return sorted;
-            }
-
-            // Function to create and show the filter dropdown
-            function showFilterDropdown(th, header) {
-                // Remove any existing dropdowns
-                document.querySelectorAll('.filter-dropdown').forEach(d => d.remove());
-
-                const uniqueValues = [...new Set(rawData.map(row => String(row[header])))].sort();
-                
-                const dropdown = document.createElement('div');
-                dropdown.classList.add('filter-dropdown');
-                dropdown.addEventListener('click', (e) => e.stopPropagation()); // Prevent closing on click inside
-
-                // "Select All" checkbox
-                const selectAllItem = document.createElement('div');
-                selectAllItem.classList.add('filter-item');
-                selectAllItem.innerHTML = `<input type="checkbox" id="selectAll"><label for="selectAll">(Select All)</label>`;
-                dropdown.appendChild(selectAllItem);
-
-                const valueList = document.createElement('div');
-                uniqueValues.forEach(value => {
-                    const filterItem = document.createElement('div');
-                    filterItem.classList.add('filter-item');
-                    const isChecked = !activeFilters[header] || activeFilters[header].length === 0 || activeFilters[header].includes(value);
-                    filterItem.innerHTML = `<input type="checkbox" value="${value}" ${isChecked ? 'checked' : ''}><label>${value}</label>`;
-                    valueList.appendChild(filterItem);
-                });
-                dropdown.appendChild(valueList);
-
-                // OK and Cancel buttons
-                const buttons = document.createElement('div');
-                buttons.classList.add('filter-buttons');
-                buttons.innerHTML = `
-                    <button class="action-button ok-btn">OK</button>
-                    <button class="red-button cancel-btn">Cancel</button>
-                `;
-                dropdown.appendChild(buttons);
-
-                th.appendChild(dropdown);
-
-                // Event listener for select all
-                const selectAllCheckbox = dropdown.querySelector('#selectAll');
-                const valueCheckboxes = dropdown.querySelectorAll('input[type="checkbox"]:not(#selectAll)');
-                selectAllCheckbox.checked = activeFilters[header] === undefined || activeFilters[header].length === uniqueValues.length;
-                selectAllCheckbox.addEventListener('change', (e) => {
-                    valueCheckboxes.forEach(cb => cb.checked = e.target.checked);
-                });
-                
-                // Event listeners for buttons
-                dropdown.querySelector('.ok-btn').addEventListener('click', () => {
-                    const selectedValues = Array.from(valueCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
-                    activeFilters[header] = selectedValues;
-                    dropdown.remove();
-                    renderTable();
-                });
-                dropdown.querySelector('.cancel-btn').addEventListener('click', () => {
-                    dropdown.remove();
-                });
-            }
-
-            // Function to render the table based on current selections, filtering, and sorting
-            function renderTable() {
-                if (selectedHeaders.length === 0) {
-                    const customAlert = document.createElement('div');
-                    customAlert.classList.add('status-message', 'status-error');
-                    customAlert.textContent = 'Please select at least one column.';
-                    document.querySelector('.main-container').appendChild(customAlert);
-                    setTimeout(() => customAlert.remove(), 3000);
-                    return;
-                }
-
-                tableHeaderRow.innerHTML = '';
-                tableBody.innerHTML = '';
-
-                const sortColumn = sortColumnSelect.value;
-                const sortDirection = document.querySelector('input[name="sortDirection"]:checked').value;
-
-                // 1. Filter the raw data based on active filters
-                const filteredData = filterData(rawData);
-                
-                // 2. Sort the filtered data
-                const sortedAndFilteredData = sortData(filteredData, sortColumn, sortDirection);
-
-                const dateTimeColumns = ['التاريخ (الي)', 'التاريخ (من)', 'وقت البدء', 'وقت الإكمال'];
-
-                selectedHeaders.forEach(header => {
-                    const th = document.createElement('th');
-                    th.textContent = header;
-                    
-                    const filterIcon = document.createElement('span');
-                    filterIcon.classList.add('filter-icon');
-                    filterIcon.textContent = '▼';
-                    filterIcon.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        showFilterDropdown(th, header);
-                    });
-                    th.appendChild(filterIcon);
-
-                    tableHeaderRow.appendChild(th);
-                });
-
-                sortedAndFilteredData.forEach(row => {
-                    const tr = document.createElement('tr');
-                    selectedHeaders.forEach(header => {
-                        const td = document.createElement('td');
-                        let cellValue = row[header] !== undefined ? row[header] : '';
-
-                        if (dateTimeColumns.includes(header)) {
-                            cellValue = formatDate(cellValue);
-                        }
-                        td.textContent = cellValue;
-                        tr.appendChild(td);
-                    });
-                    tableBody.appendChild(tr);
-                });
-
-                resultSection.classList.remove('hidden');
-                loadingIndicator.style.display = 'none';
-
-                if (pptxReady && window.PptxGenJS) {
-                    exportPPTXBtn.disabled = false;
-                    pptStatusMessage.textContent = 'PowerPoint library ready. You can now export to PPTX.';
-                    pptStatusMessage.className = 'status-message status-success';
-                } else {
-                    exportPPTXBtn.disabled = true;
-                    pptStatusMessage.textContent = 'PowerPoint library not ready. Please wait or refresh the page.';
-                    pptStatusMessage.className = 'status-message status-error';
-                }
-            }
-
-            // Event listeners for filtering and sorting controls
             sortColumnSelect.addEventListener('change', renderTable);
             sortDirectionRadios.forEach(radio => radio.addEventListener('change', renderTable));
             displayTableBtn.addEventListener('click', renderTable);
 
-            // Move column up
             moveUpBtn.addEventListener('click', () => {
                 if (currentlySelectedColumnElement) {
                     const header = currentlySelectedColumnElement.dataset.header;
@@ -892,7 +1104,6 @@
                 }
             });
 
-            // Move column down
             moveDownBtn.addEventListener('click', () => {
                 if (currentlySelectedColumnElement) {
                     const header = currentlySelectedColumnElement.dataset.header;
@@ -909,12 +1120,11 @@
                 }
             });
 
-            // Export to PPTX
             exportPPTXBtn.addEventListener('click', async () => {
                 if (selectedHeaders.length === 0) {
                     const customAlert = document.createElement('div');
                     customAlert.classList.add('status-message', 'status-error');
-                    customAlert.textContent = 'No data to export. Please display the table first.';
+                    customAlert.textContent = translations[currentLanguage]['no-column-selected-error'];
                     document.querySelector('.main-container').appendChild(customAlert);
                     setTimeout(() => customAlert.remove(), 3000);
                     return;
@@ -923,7 +1133,7 @@
                 if (!pptxReady || !window.PptxGenJS) {
                     const customAlert = document.createElement('div');
                     customAlert.classList.add('status-message', 'status-error');
-                    customAlert.textContent = 'PowerPoint generation is not available. Please wait for the library to load or refresh the page.';
+                    customAlert.textContent = translations[currentLanguage]['pptx-export-unavailable'];
                     document.querySelector('.main-container').appendChild(customAlert);
                     setTimeout(() => customAlert.remove(), 3000);
                     return;
@@ -941,7 +1151,6 @@
 
                         const dateTimeColumns = ['التاريخ (الي)', 'التاريخ (من)', 'وقت البدء', 'وقت الإكمال'];
 
-                        // Use filtered and sorted data for export
                         const filteredAndSortedData = filterData(rawData).sort((a, b) => {
                             const sortColumn = sortColumnSelect.value;
                             const sortDirection = document.querySelector('input[name="sortDirection"]:checked').value;
@@ -953,7 +1162,7 @@
                         );
 
                         if (dataToPresent.length === 0) {
-                            pptStatusMessage.textContent = 'No data with content to generate slides for.';
+                            pptStatusMessage.textContent = translations[currentLanguage]['pptx-no-data-to-export'];
                             pptStatusMessage.className = 'status-message status-error';
                             loadingIndicator.style.display = 'none';
                             exportPPTXBtn.disabled = false;
@@ -1058,11 +1267,11 @@
                         });
 
                         await pptx.writeFile({ fileName: 'detailed-records-report.pptx' });
-                        pptStatusMessage.textContent = 'تم تنزيل ملف PowerPoint بنجاح! - PowerPoint file downloaded successfully! 🎉';
+                        pptStatusMessage.textContent = translations[currentLanguage]['pptx-download-success'];
                         pptStatusMessage.className = 'status-message status-success';
                     } catch (error) {
                         console.error("Error generating PowerPoint file:", error);
-                        pptStatusMessage.textContent = `خطأ في إنشاء ملف PowerPoint - Error generating PowerPoint file: ${error.message}`;
+                        pptStatusMessage.textContent = `${translations[currentLanguage]['pptx-download-error']} ${error.message}`;
                         pptStatusMessage.className = 'status-message status-error';
                     } finally {
                         loadingIndicator.style.display = 'none';
