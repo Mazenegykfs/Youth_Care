@@ -144,6 +144,40 @@
             background-color: #a7d9fc;
             font-weight: 600;
             color: #1f2937;
+            position: relative;
+        }
+        th .filter-icon {
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-left: 0.5rem;
+            vertical-align: middle;
+            color: #1e40af;
+        }
+        th.sorted-asc .sort-icon::after { content: '▲'; }
+        th.sorted-desc .sort-icon::after { content: '▼'; }
+        .filter-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 10;
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 0.75rem;
+            min-width: 150px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .filter-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
         }
         tr:nth-child(even) {
             background-color: #e3f5fe;
@@ -239,14 +273,16 @@
             align-items: center;
             gap: 1rem;
             margin-bottom: 1rem;
+            flex-wrap: wrap;
         }
         .control-group label {
             font-weight: 500;
         }
-        .control-group select, .control-group input {
+        .control-group select, .control-group input[type="text"] {
             padding: 0.5rem;
             border-radius: 0.25rem;
             border: 1px solid #cbd5e1;
+            flex-grow: 1;
         }
         .control-group input[type="radio"] {
             margin-right: 0.5rem;
@@ -260,6 +296,10 @@
             }
             .action-button {
                 width: 100%;
+            }
+            .control-group {
+                flex-direction: column;
+                align-items: stretch;
             }
         }
     </style>
@@ -371,7 +411,7 @@
             let rawData = [];
             let allHeaders = [];
             let selectedHeaders = [];
-            let sortedData = [];
+            let activeFilters = {}; // New object to store filters per column
             let currentlySelectedColumnElement = null;
             let pptxReady = false;
 
@@ -392,6 +432,17 @@
             const sortColumnSelect = document.getElementById('sortColumn');
             const sortDirectionRadios = document.querySelectorAll('input[name="sortDirection"]');
             const fontSizeInput = document.getElementById('fontSizeInput');
+            
+            // Listen for clicks outside the filter dropdown to close it
+            document.addEventListener('click', (e) => {
+                const dropdowns = document.querySelectorAll('.filter-dropdown');
+                dropdowns.forEach(dropdown => {
+                    const parentTh = dropdown.closest('th');
+                    if (parentTh && !parentTh.contains(e.target)) {
+                        dropdown.remove();
+                    }
+                });
+            });
 
             // Load PptxGenJS library
             loadPptxGenJS().then(() => {
@@ -548,12 +599,13 @@
                 }
             }
 
-            // Initialize column selectors and sorting options
+            // Initialize column selectors and sorting/filtering options
             function initializeColumnSelectors() {
                 availableColumnsList.innerHTML = '';
                 selectedColumnsList.innerHTML = '';
                 sortColumnSelect.innerHTML = '<option value="">(None)</option>';
                 selectedHeaders = [];
+                activeFilters = {};
                 columnSelectionSection.classList.remove('hidden');
                 resultSection.classList.add('hidden');
 
@@ -567,10 +619,10 @@
                     item.dataset.header = header;
                     availableColumnsList.appendChild(item);
 
-                    const option = document.createElement('option');
-                    option.value = header;
-                    option.textContent = header;
-                    sortColumnSelect.appendChild(option);
+                    const sortOption = document.createElement('option');
+                    sortOption.value = header;
+                    sortOption.textContent = header;
+                    sortColumnSelect.appendChild(sortOption);
                 });
 
                 availableColumnsList.querySelectorAll('.add-to-selected').forEach(button => {
@@ -612,6 +664,7 @@
                         e.stopPropagation();
                         const headerToRemove = e.target.closest('.column-item').dataset.header;
                         selectedHeaders = selectedHeaders.filter(h => h !== headerToRemove);
+                        delete activeFilters[headerToRemove];
                         renderSelectedColumns();
                         if (currentlySelectedColumnElement && currentlySelectedColumnElement.dataset.header === headerToRemove) {
                             currentlySelectedColumnElement = null;
@@ -620,6 +673,18 @@
                 });
             }
             
+            // Function to filter data based on activeFilters object
+            function filterData(data) {
+                let filteredData = [...data];
+                for (const column in activeFilters) {
+                    // Check if the filter for this column is not empty
+                    if (activeFilters[column].length > 0) {
+                        filteredData = filteredData.filter(row => activeFilters[column].includes(String(row[column])));
+                    }
+                }
+                return filteredData;
+            }
+
             // Function to sort data
             function sortData(data, column, direction) {
                 if (!column) return data;
@@ -650,7 +715,65 @@
                 return sorted;
             }
 
-            // Function to render the table based on current selections and sorting
+            // Function to create and show the filter dropdown
+            function showFilterDropdown(th, header) {
+                // Remove any existing dropdowns
+                document.querySelectorAll('.filter-dropdown').forEach(d => d.remove());
+
+                const uniqueValues = [...new Set(rawData.map(row => String(row[header])))].sort();
+                
+                const dropdown = document.createElement('div');
+                dropdown.classList.add('filter-dropdown');
+                dropdown.addEventListener('click', (e) => e.stopPropagation()); // Prevent closing on click inside
+
+                // "Select All" checkbox
+                const selectAllItem = document.createElement('div');
+                selectAllItem.classList.add('filter-item');
+                selectAllItem.innerHTML = `<input type="checkbox" id="selectAll"><label for="selectAll">(Select All)</label>`;
+                dropdown.appendChild(selectAllItem);
+
+                const valueList = document.createElement('div');
+                uniqueValues.forEach(value => {
+                    const filterItem = document.createElement('div');
+                    filterItem.classList.add('filter-item');
+                    const isChecked = !activeFilters[header] || activeFilters[header].length === 0 || activeFilters[header].includes(value);
+                    filterItem.innerHTML = `<input type="checkbox" value="${value}" ${isChecked ? 'checked' : ''}><label>${value}</label>`;
+                    valueList.appendChild(filterItem);
+                });
+                dropdown.appendChild(valueList);
+
+                // OK and Cancel buttons
+                const buttons = document.createElement('div');
+                buttons.classList.add('filter-buttons');
+                buttons.innerHTML = `
+                    <button class="action-button ok-btn">OK</button>
+                    <button class="red-button cancel-btn">Cancel</button>
+                `;
+                dropdown.appendChild(buttons);
+
+                th.appendChild(dropdown);
+
+                // Event listener for select all
+                const selectAllCheckbox = dropdown.querySelector('#selectAll');
+                const valueCheckboxes = dropdown.querySelectorAll('input[type="checkbox"]:not(#selectAll)');
+                selectAllCheckbox.checked = activeFilters[header] === undefined || activeFilters[header].length === uniqueValues.length;
+                selectAllCheckbox.addEventListener('change', (e) => {
+                    valueCheckboxes.forEach(cb => cb.checked = e.target.checked);
+                });
+                
+                // Event listeners for buttons
+                dropdown.querySelector('.ok-btn').addEventListener('click', () => {
+                    const selectedValues = Array.from(valueCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+                    activeFilters[header] = selectedValues;
+                    dropdown.remove();
+                    renderTable();
+                });
+                dropdown.querySelector('.cancel-btn').addEventListener('click', () => {
+                    dropdown.remove();
+                });
+            }
+
+            // Function to render the table based on current selections, filtering, and sorting
             function renderTable() {
                 if (selectedHeaders.length === 0) {
                     const customAlert = document.createElement('div');
@@ -666,18 +789,32 @@
 
                 const sortColumn = sortColumnSelect.value;
                 const sortDirection = document.querySelector('input[name="sortDirection"]:checked').value;
+
+                // 1. Filter the raw data based on active filters
+                const filteredData = filterData(rawData);
                 
-                sortedData = sortData(rawData, sortColumn, sortDirection);
+                // 2. Sort the filtered data
+                const sortedAndFilteredData = sortData(filteredData, sortColumn, sortDirection);
 
                 const dateTimeColumns = ['التاريخ (الي)', 'التاريخ (من)', 'وقت البدء', 'وقت الإكمال'];
 
                 selectedHeaders.forEach(header => {
                     const th = document.createElement('th');
                     th.textContent = header;
+                    
+                    const filterIcon = document.createElement('span');
+                    filterIcon.classList.add('filter-icon');
+                    filterIcon.textContent = '▼';
+                    filterIcon.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        showFilterDropdown(th, header);
+                    });
+                    th.appendChild(filterIcon);
+
                     tableHeaderRow.appendChild(th);
                 });
 
-                sortedData.forEach(row => {
+                sortedAndFilteredData.forEach(row => {
                     const tr = document.createElement('tr');
                     selectedHeaders.forEach(header => {
                         const td = document.createElement('td');
@@ -706,7 +843,7 @@
                 }
             }
 
-            // Event listeners for sorting controls
+            // Event listeners for filtering and sorting controls
             sortColumnSelect.addEventListener('change', renderTable);
             sortDirectionRadios.forEach(radio => radio.addEventListener('change', renderTable));
             displayTableBtn.addEventListener('click', renderTable);
@@ -777,7 +914,14 @@
 
                         const dateTimeColumns = ['التاريخ (الي)', 'التاريخ (من)', 'وقت البدء', 'وقت الإكمال'];
 
-                        const dataToPresent = sortedData.filter(row =>
+                        // Use filtered and sorted data for export
+                        const filteredAndSortedData = filterData(rawData).sort((a, b) => {
+                            const sortColumn = sortColumnSelect.value;
+                            const sortDirection = document.querySelector('input[name="sortDirection"]:checked').value;
+                            return sortData([a, b], sortColumn, sortDirection)[0] === a ? -1 : 1;
+                        });
+
+                        const dataToPresent = filteredAndSortedData.filter(row =>
                             selectedHeaders.some(header => row[header] !== undefined && String(row[header]).trim() !== '')
                         );
 
