@@ -265,6 +265,9 @@
     </style>
 </head>
 <body>
+    <div class="header-bar">
+        Developed by Dr. Mazen Badawy – Doctorate of English Teaching & Testing
+    </div>
     <div class="main-container">
         <h1>Column Selection and Data Export</h1>
 
@@ -315,8 +318,6 @@
                 <input type="number" id="fontSizeInput" value="12" min="8" max="24">
             </div>
             <div class="button-group">
-                <button id="exportXLSXBtn" class="action-button">Export to XLSX</button>
-                <button id="copyTableBtn" class="action-button">Copy Table</button>
                 <button id="exportPPTXBtn" class="action-button" disabled>Export to PPTX</button>
             </div>
             <div class="table-container">
@@ -385,12 +386,11 @@
             const resultSection = document.getElementById('resultSection');
             const tableHeaderRow = document.getElementById('tableHeaderRow');
             const tableBody = document.getElementById('tableBody');
-            const exportXLSXBtn = document.getElementById('exportXLSXBtn');
-            const copyTableBtn = document.getElementById('copyTableBtn');
             const exportPPTXBtn = document.getElementById('exportPPTXBtn');
             const loadingIndicator = document.getElementById('loadingIndicator');
             const pptStatusMessage = document.getElementById('pptStatusMessage');
             const sortColumnSelect = document.getElementById('sortColumn');
+            const sortDirectionRadios = document.querySelectorAll('input[name="sortDirection"]');
             const fontSizeInput = document.getElementById('fontSizeInput');
 
             // Load PptxGenJS library
@@ -482,7 +482,6 @@
                     } else if (fileName.endsWith('.xlsx')) {
                         parseXLSX(data);
                     } else {
-                        // Use custom message instead of alert
                         const customAlert = document.createElement('div');
                         customAlert.classList.add('status-message', 'status-error');
                         customAlert.textContent = 'Please upload a CSV or XLSX file.';
@@ -509,7 +508,6 @@
                         initializeColumnSelectors();
                     },
                     error: function(err) {
-                        // Use custom message instead of alert
                         const customAlert = document.createElement('div');
                         customAlert.classList.add('status-message', 'status-error');
                         customAlert.textContent = 'Error parsing CSV: ' + err.message;
@@ -533,7 +531,6 @@
                     } else {
                         allHeaders = [];
                         rawData = [];
-                        // Use custom message instead of alert
                         const customAlert = document.createElement('div');
                         customAlert.classList.add('status-message', 'status-error');
                         customAlert.textContent = 'XLSX file is empty or has no identifiable headers.';
@@ -542,7 +539,6 @@
                     }
                     initializeColumnSelectors();
                 } catch (error) {
-                    // Use custom message instead of alert
                     const customAlert = document.createElement('div');
                     customAlert.classList.add('status-message', 'status-error');
                     customAlert.textContent = 'Error parsing XLSX: ' + error.message;
@@ -562,7 +558,6 @@
                 resultSection.classList.add('hidden');
 
                 allHeaders.forEach(header => {
-                    // Populate available columns list
                     const item = document.createElement('div');
                     item.classList.add('column-item');
                     item.innerHTML = `
@@ -572,7 +567,6 @@
                     item.dataset.header = header;
                     availableColumnsList.appendChild(item);
 
-                    // Populate sort dropdown
                     const option = document.createElement('option');
                     option.value = header;
                     option.textContent = header;
@@ -631,22 +625,91 @@
                 if (!column) return data;
                 
                 const sorted = [...data].sort((a, b) => {
-                    const valA = a[column];
-                    const valB = b[column];
-                    
-                    if (valA === null || valA === undefined) return 1;
-                    if (valB === null || valB === undefined) return -1;
+                    let valA = a[column];
+                    let valB = b[column];
 
-                    if (typeof valA === 'string' && typeof valB === 'string') {
-                        return valA.localeCompare(valB, 'en-US', { sensitivity: 'base' });
-                    }
+                    const dateTimeColumns = ['التاريخ (الي)', 'التاريخ (من)', 'وقت البدء', 'وقت الإكمال'];
+
+                    if (valA === null || valA === undefined || valA === '') return 1;
+                    if (valB === null || valB === undefined || valB === '') return -1;
                     
-                    if (valA < valB) return direction === 'asc' ? -1 : 1;
-                    if (valA > valB) return direction === 'asc' ? 1 : -1;
-                    return 0;
+                    let comparison = 0;
+
+                    if (dateTimeColumns.includes(column)) {
+                        const dateA = new Date(valA);
+                        const dateB = new Date(valB);
+                        comparison = dateA - dateB;
+                    } else if (!isNaN(parseFloat(valA)) && isFinite(valA) && !isNaN(parseFloat(valB)) && isFinite(valB)) {
+                        comparison = parseFloat(valA) - parseFloat(valB);
+                    } else {
+                        comparison = String(valA).localeCompare(String(valB), 'ar', { sensitivity: 'base' });
+                    }
+
+                    return direction === 'asc' ? comparison : -comparison;
                 });
                 return sorted;
             }
+
+            // Function to render the table based on current selections and sorting
+            function renderTable() {
+                if (selectedHeaders.length === 0) {
+                    const customAlert = document.createElement('div');
+                    customAlert.classList.add('status-message', 'status-error');
+                    customAlert.textContent = 'Please select at least one column.';
+                    document.querySelector('.main-container').appendChild(customAlert);
+                    setTimeout(() => customAlert.remove(), 3000);
+                    return;
+                }
+
+                tableHeaderRow.innerHTML = '';
+                tableBody.innerHTML = '';
+
+                const sortColumn = sortColumnSelect.value;
+                const sortDirection = document.querySelector('input[name="sortDirection"]:checked').value;
+                
+                sortedData = sortData(rawData, sortColumn, sortDirection);
+
+                const dateTimeColumns = ['التاريخ (الي)', 'التاريخ (من)', 'وقت البدء', 'وقت الإكمال'];
+
+                selectedHeaders.forEach(header => {
+                    const th = document.createElement('th');
+                    th.textContent = header;
+                    tableHeaderRow.appendChild(th);
+                });
+
+                sortedData.forEach(row => {
+                    const tr = document.createElement('tr');
+                    selectedHeaders.forEach(header => {
+                        const td = document.createElement('td');
+                        let cellValue = row[header] !== undefined ? row[header] : '';
+
+                        if (dateTimeColumns.includes(header)) {
+                            cellValue = formatDate(cellValue);
+                        }
+                        td.textContent = cellValue;
+                        tr.appendChild(td);
+                    });
+                    tableBody.appendChild(tr);
+                });
+
+                resultSection.classList.remove('hidden');
+                loadingIndicator.style.display = 'none';
+
+                if (pptxReady && window.PptxGenJS) {
+                    exportPPTXBtn.disabled = false;
+                    pptStatusMessage.textContent = 'PowerPoint library ready. You can now export to PPTX.';
+                    pptStatusMessage.className = 'status-message status-success';
+                } else {
+                    exportPPTXBtn.disabled = true;
+                    pptStatusMessage.textContent = 'PowerPoint library not ready. Please wait or refresh the page.';
+                    pptStatusMessage.className = 'status-message status-error';
+                }
+            }
+
+            // Event listeners for sorting controls
+            sortColumnSelect.addEventListener('change', renderTable);
+            sortDirectionRadios.forEach(radio => radio.addEventListener('change', renderTable));
+            displayTableBtn.addEventListener('click', renderTable);
 
             // Move column up
             moveUpBtn.addEventListener('click', () => {
@@ -682,150 +745,9 @@
                 }
             });
 
-            // Display table
-            displayTableBtn.addEventListener('click', () => {
-                if (selectedHeaders.length === 0) {
-                    // Use a custom message instead of alert
-                    const customAlert = document.createElement('div');
-                    customAlert.classList.add('status-message', 'status-error');
-                    customAlert.textContent = 'Please select at least one column.';
-                    document.querySelector('.main-container').appendChild(customAlert);
-                    setTimeout(() => customAlert.remove(), 3000);
-                    return;
-                }
-
-                tableHeaderRow.innerHTML = '';
-                tableBody.innerHTML = '';
-
-                // Get sorting options
-                const sortColumn = sortColumnSelect.value;
-                const sortDirection = document.querySelector('input[name="sortDirection"]:checked').value;
-                
-                // Sort the data based on selection
-                sortedData = sortData(rawData, sortColumn, sortDirection);
-
-                const dateTimeColumns = ['التاريخ (الي)', 'التاريخ (من)', 'وقت البدء', 'وقت الإكمال'];
-
-                selectedHeaders.forEach(header => {
-                    const th = document.createElement('th');
-                    th.textContent = header;
-                    tableHeaderRow.appendChild(th);
-                });
-
-                sortedData.forEach(row => {
-                    const tr = document.createElement('tr');
-                    selectedHeaders.forEach(header => {
-                        const td = document.createElement('td');
-                        let cellValue = row[header] !== undefined ? row[header] : '';
-
-                        if (dateTimeColumns.includes(header)) {
-                            cellValue = formatDate(cellValue);
-                        }
-                        td.textContent = cellValue;
-                        tr.appendChild(td);
-                    });
-                    tableBody.appendChild(tr);
-                });
-
-                resultSection.classList.remove('hidden');
-                loadingIndicator.style.display = 'none';
-
-                // Enable PPTX button if library is ready
-                if (pptxReady && window.PptxGenJS) {
-                    exportPPTXBtn.disabled = false;
-                    pptStatusMessage.textContent = 'PowerPoint library ready. You can now export to PPTX.';
-                    pptStatusMessage.className = 'status-message status-success';
-                } else {
-                    exportPPTXBtn.disabled = true;
-                    pptStatusMessage.textContent = 'PowerPoint library not ready. Please wait or refresh the page.';
-                    pptStatusMessage.className = 'status-message status-error';
-                }
-            });
-
-            // Copy table to clipboard
-            copyTableBtn.addEventListener('click', () => {
-                let tableText = '';
-                Array.from(tableHeaderRow.children).forEach((th, index) => {
-                    tableText += th.textContent + (index < tableHeaderRow.children.length - 1 ? '\t' : '');
-                });
-                tableText += '\n';
-
-                Array.from(tableBody.children).forEach(row => {
-                    Array.from(row.children).forEach((td, index) => {
-                        tableText += td.textContent + (index < row.children.length - 1 ? '\t' : '');
-                    });
-                    tableText += '\n';
-                });
-
-                // Use a custom message instead of alert
-                // In a real app, this would be a modal
-                const customMessage = document.createElement('div');
-                customMessage.classList.add('status-message', 'status-info');
-                try {
-                    // Modern approach
-                    navigator.clipboard.writeText(tableText).then(() => {
-                        customMessage.textContent = 'Table copied to clipboard!';
-                    }).catch(err => {
-                        console.error('Failed to copy using modern API: ', err);
-                        // Fallback to older method
-                        const textarea = document.createElement('textarea');
-                        textarea.value = tableText;
-                        document.body.appendChild(textarea);
-                        textarea.select();
-                        document.execCommand('copy');
-                        document.body.removeChild(textarea);
-                        customMessage.textContent = 'Table copied to clipboard!';
-                    });
-                } catch (e) {
-                     // Fallback to older method
-                     const textarea = document.createElement('textarea');
-                     textarea.value = tableText;
-                     document.body.appendChild(textarea);
-                     textarea.select();
-                     document.execCommand('copy');
-                     document.body.removeChild(textarea);
-                     customMessage.textContent = 'Table copied to clipboard!';
-                }
-                document.querySelector('.main-container').appendChild(customMessage);
-                setTimeout(() => customMessage.remove(), 3000);
-            });
-
-            // Export to XLSX
-            exportXLSXBtn.addEventListener('click', () => {
-                if (selectedHeaders.length === 0) {
-                    // Use a custom message instead of alert
-                    const customAlert = document.createElement('div');
-                    customAlert.classList.add('status-message', 'status-error');
-                    customAlert.textContent = 'No data to export. Please display the table first.';
-                    document.querySelector('.main-container').appendChild(customAlert);
-                    setTimeout(() => customAlert.remove(), 3000);
-                    return;
-                }
-
-                const dataToExport = [selectedHeaders];
-                const dateTimeColumns = ['التاريخ (الي)', 'التاريخ (من)', 'وقت البدء', 'وقت الإكمال'];
-
-                sortedData.forEach(row => {
-                    const newRow = selectedHeaders.map(header => {
-                        let cellValue = row[header] !== undefined ? row[header] : '';
-                        if (dateTimeColumns.includes(header)) {
-                            cellValue = formatDate(cellValue);
-                        }
-                        return cellValue;
-                    });
-                    dataToExport.push(newRow);
-                });
-
-                const ws = XLSX.utils.aoa_to_sheet(dataToExport);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-                XLSX.writeFile(wb, "exported_data.xlsx");
-            });
-
             // Export to PPTX
             exportPPTXBtn.addEventListener('click', async () => {
                 if (selectedHeaders.length === 0) {
-                    // Use a custom message instead of alert
                     const customAlert = document.createElement('div');
                     customAlert.classList.add('status-message', 'status-error');
                     customAlert.textContent = 'No data to export. Please display the table first.';
@@ -853,38 +775,8 @@
                         pptx.layout = 'LAYOUT_WIDE';
                         const pptxFontSize = parseInt(fontSizeInput.value, 10);
 
-                        // Define slide master for all slides
-                        pptx.defineSlideMaster({
-                            title: 'UNIVERSAL_HEADER_MASTER',
-                            background: { fill: 'FFFFFF' },
-                            objects: [
-                                {
-                                    rect: {
-                                        x: 0, y: 0, w: '100%', h: 0.8,
-                                        fill: { color: '1E3A8A' }
-                                    }
-                                },
-                                {
-                                    text: 'المعهد العالي للهندسة والتكنولوجيا بكفر الشيخ',
-                                    options: {
-                                        x: 0,
-                                        y: 0,
-                                        w: '100%',
-                                        h: 0.8,
-                                        fontSize: 18,
-                                        color: 'FFFFFF',
-                                        align: 'center',
-                                        valign: 'middle',
-                                        rtl: true,
-                                        bold: true
-                                    }
-                                }
-                            ]
-                        });
-
                         const dateTimeColumns = ['التاريخ (الي)', 'التاريخ (من)', 'وقت البدء', 'وقت الإكمال'];
 
-                        // Filter data with content
                         const dataToPresent = sortedData.filter(row =>
                             selectedHeaders.some(header => row[header] !== undefined && String(row[header]).trim() !== '')
                         );
@@ -897,23 +789,32 @@
                             return;
                         }
 
-                        // Create one slide per record
                         dataToPresent.forEach((row, recordIndex) => {
-                            // Create the main data slide using the defined master
-                            let slide = pptx.addSlide({ masterName: 'UNIVERSAL_HEADER_MASTER' });
+                            let slide = pptx.addSlide();
+                            slide.background = { fill: 'FFFFFF' };
+
+                            slide.addText('المعهد العالي للهندسة والتكنولوجيا بكفر الشيخ', {
+                                x: 0,
+                                y: 0.5,
+                                w: '100%',
+                                h: 0.5,
+                                fontSize: 18,
+                                color: '1E3A8A',
+                                align: 'center',
+                                valign: 'middle',
+                                rtl: true,
+                                bold: true
+                            });
                             
-                            // Create a details table for this record
                             const recordTableData = [];
 
                             selectedHeaders.forEach(header => {
                                 let cellValue = row[header] !== undefined ? row[header] : '';
                                 
-                                // Format dates
                                 if (dateTimeColumns.includes(header)) {
                                     cellValue = formatDate(cellValue);
                                 }
 
-                                // Create table row with VALUE first (right side), then LABEL (left side) for RTL layout
                                 recordTableData.push([
                                     {
                                         text: String(cellValue),
@@ -922,11 +823,12 @@
                                             fontSize: pptxFontSize,
                                             color: '1F2937',
                                             fill: 'FFFFFF',
-                                            align: 'right', // Always align right for RTL
+                                            align: 'right',
                                             valign: 'top',
-                                            rtl: true, // Enable RTL for all content
+                                            rtl: true,
                                             margin: [0.1, 0.1, 0.1, 0.1],
-                                            breakLine: true
+                                            breakLine: true,
+                                            bold: true
                                         }
                                     },
                                     {
@@ -937,34 +839,30 @@
                                             fontSize: pptxFontSize + 2,
                                             color: '1E3A8A',
                                             fill: 'A7D9FC',
-                                            align: 'right', // Always align right for RTL
+                                            align: 'right',
                                             valign: 'middle',
-                                            rtl: true, // Enable RTL for all headers
+                                            rtl: true,
                                             margin: [0.1, 0.1, 0.1, 0.1]
                                         }
                                     }
                                 ]);
                             });
 
-                            // Add the details table with RTL column order and a black border
                             slide.addTable(recordTableData, {
                                 x: 0.8,
                                 y: 1.4,
                                 w: 11.4,
                                 h: 5.2,
-                                border: { pt: 1, color: '000000' }, // Set border to black
-                                colW: [7.6, 3.8], // 67% for values (right), 33% for labels (left)
-                                rowH: recordTableData.map(() => {
-                                    // Calculate row height based on content length
-                                    return 0.4; // Default row height, could be adjusted
-                                }),
+                                border: { pt: 1, color: '000000' },
+                                colW: [7.6, 3.8],
+                                rowH: recordTableData.map(() => 0.4),
                                 autoPage: false,
                                 fill: 'F8FAFC',
-                                rtl: true // Enable RTL for the entire table
+                                rtl: true
                             });
 
-                            // Add two blank slides after each data slide
-                            let blankSlide1 = pptx.addSlide({ masterName: 'UNIVERSAL_HEADER_MASTER' });
+                            let blankSlide1 = pptx.addSlide();
+                            blankSlide1.background = { fill: 'FFFFFF' };
                             blankSlide1.addText('فاصل', {
                                 x: 0, y: '50%', w: '100%', h: 1,
                                 fontSize: 32,
@@ -975,7 +873,8 @@
                                 bold: true
                             });
 
-                            let blankSlide2 = pptx.addSlide({ masterName: 'UNIVERSAL_HEADER_MASTER' });
+                            let blankSlide2 = pptx.addSlide();
+                            blankSlide2.background = { fill: 'FFFFFF' };
                             blankSlide2.addText('تابع', {
                                 x: 0, y: '50%', w: '100%', h: 1,
                                 fontSize: 32,
