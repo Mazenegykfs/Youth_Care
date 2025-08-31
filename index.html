@@ -16,12 +16,35 @@
             background-color: #1e3a8a; /* Darker blue for header */
             color: white;
             padding: 1rem;
-            text-align: center;
-            font-weight: 700;
-            font-size: 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-bottom-left-radius: 0.75rem;
             border-bottom-right-radius: 0.75rem;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header-title-container {
+            flex-grow: 1;
+        }
+        .header-main-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin: 0;
+            line-height: 1.2;
+            text-align: left;
+        }
+        .header-subtitle {
+            font-weight: 400;
+            font-size: 0.9rem;
+            margin: 0;
+            text-align: left;
+        }
+        .header-logo {
+            height: 60px; /* Adjust as needed */
+            width: auto;
+            border-radius: 50%;
+            margin-left: 1rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Add a subtle glow/shadow to the logo */
         }
         .main-container {
             width: 100%;
@@ -306,7 +329,11 @@
 </head>
 <body>
     <div class="header-bar">
-        Developed by Dr. Mazen Badawy – Doctorate of English Teaching & Testing
+        <div class="header-title-container">
+            <div class="header-main-title">Developed by Dr. Mazen Badawy</div>
+            <div class="header-subtitle">Doctorate of English Teaching and Testing</div>
+        </div>
+        <img src="00.png" alt="Logo" class="header-logo">
     </div>
     <div class="main-container">
         <h1>Column Selection and Data Export</h1>
